@@ -1,12 +1,17 @@
-import java.io.File;
 import java.io.FileNotFoundException;
 
 public class tester {
+	
 	public static void main(String[] args) throws FileNotFoundException {
-		File file = new File("Tue24Oct2017050015GMT.txt");
-		News noticia = new News(file, 1);
-		System.out.println(noticia.getTitle());
-		System.out.println(noticia.getContent());
+		Server serve = new Server();
+		
+		serve.assignWork("fogos");
+		
+		for (Result result : serve.getSuccessfullSearchNews()) {
+			System.out.println("In the news " + serve.getNews().get(result.getNewsId()).getTitle() +
+					" the word fogos occurred " + result.getNumberOfOccurrences() + " times!");
+		}
+		
 	}
 	
 }

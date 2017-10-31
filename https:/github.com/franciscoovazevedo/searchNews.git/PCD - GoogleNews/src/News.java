@@ -1,12 +1,10 @@
-
+// mais uma classe que pode já estar finalizada. Não vemos onde poderemos alterar o comportamento 
+// desta classe1
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-import java.util.StringTokenizer;
-import java.util.regex.Pattern;
 
-import javax.xml.soap.Text;
 
 public class News {
 	private int id;
@@ -14,8 +12,7 @@ public class News {
 	private String content;
 	private Scanner scanner;
 	
-	public News(File file, int id) throws FileNotFoundException {
-		this.id = id;
+	public News(File file) throws FileNotFoundException {
 		scanner = new Scanner(file);
 		if(scanner.hasNextLine())
 			title = scanner.nextLine();
@@ -23,6 +20,9 @@ public class News {
 			content = scanner.nextLine();
 	}
 	
+	public void setId(int id) {
+		this.id = id;
+	}
 	public boolean hasWord(String word) {
 		if(title.toLowerCase().contains(word.toLowerCase()) || content.toLowerCase().contains(word.toLowerCase()))
 			return true;

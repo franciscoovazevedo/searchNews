@@ -1,5 +1,4 @@
-// tarefa realizada pelo Worker. Julgo que não terá mais alterações visto, para já, não ver utilidade em 
-// transformar esta class num objeto Thread.
+// cada Task será uma thread!
 public class Task {
 	private String word;
 	private News news;

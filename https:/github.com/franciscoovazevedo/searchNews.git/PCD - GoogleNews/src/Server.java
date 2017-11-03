@@ -5,7 +5,7 @@ import java.util.Random;
 // a principal class do programa. Parece robusta mas terá ainda que sofrer alterações com a parte concorrencial.
 //
 public class Server {
-	private LinkedList<News> news = new LinkedList<>();
+	private LinkedList<News> news = new LinkedList<>(); // repo 
 	private LinkedList<Worker> workers = new LinkedList<>();
 	private LinkedList<Result> successfullSearchNews = new LinkedList<>();
 	
@@ -21,7 +21,7 @@ public class Server {
 			}
 		} 
 		
-		for(int i = 0; i < news.size() / 10; i++)
+		for(int i = 0; i < news.size() / 10; i++)   // criação de workers
 			workers.add(new Worker());
 	}
 	
@@ -36,11 +36,11 @@ public class Server {
 	
 	public void assignWork(String word){
 
-		for (News news : news) {
+		for (News news : news) {  // assign workers
 			int random = new Random().nextInt(workers.size());
 			workers.get(random).assignTask(new Task(word, news));
 		}
-		for (Worker worker : workers ) {
+		for (Worker worker : workers ) { // distribui trabalho pelos workers
 			successfullSearchNews.addAll(worker.workListOfTasks());
 		}
 

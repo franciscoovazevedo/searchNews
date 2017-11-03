@@ -23,6 +23,7 @@ public class News {
 	public void setId(int id) {
 		this.id = id;
 	}
+	
 	public boolean hasWord(String word) {
 		if(title.toLowerCase().contains(word.toLowerCase()) || content.toLowerCase().contains(word.toLowerCase()))
 			return true;

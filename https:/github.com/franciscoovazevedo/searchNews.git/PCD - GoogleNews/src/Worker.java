@@ -1,6 +1,6 @@
 import java.util.LinkedList;
-// primeira versão do worker, ainda sem as threads. Não deverá fugir muito disto, e penso que apenas 
-// falta acrescentar a parte da programação em concorrencia.
+// primeira versão // os workers serão lançados independentemente do servidor e do client. 
+// receberão um PORTO (do servidor) e depois vão esperar até terem trabalho para fazer.
 public class Worker {
 	private LinkedList<Task> tasks = new LinkedList<>();
 	

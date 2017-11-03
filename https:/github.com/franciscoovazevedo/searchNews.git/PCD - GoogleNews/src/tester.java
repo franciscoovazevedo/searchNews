@@ -4,12 +4,13 @@ public class tester {
 	
 	public static void main(String[] args) throws FileNotFoundException {
 		Server serve = new Server();
-		
-		serve.assignWork("fogos");
+		Client client = new Client(serve, "Marcelo Rebelo");
+//		GUI GUIinterface = new GUI(serve, client);
+		client.start();
 		
 		for (Result result : serve.getSuccessfullSearchNews()) {
 			System.out.println("In the news " + serve.getNews().get(result.getNewsId()).getTitle() +
-					" the word fogos occurred " + result.getNumberOfOccurrences() + " times!");
+					" the word " +  client.getWord() + " occurred " + result.getNumberOfOccurrences() + " times!");
 		}
 		
 	}

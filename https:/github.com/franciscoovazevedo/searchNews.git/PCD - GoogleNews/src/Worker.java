@@ -14,10 +14,11 @@ public class Worker {
 	public LinkedList<Result> workListOfTasks() {
 		LinkedList<Result> success = new LinkedList<>();
 		for (Task task : tasks) {
-			if(work(task) != null)
-				success.add(work(task));
+			if(work(task) != null )
+				if(work(task).getNumberOfOccurrences() != 0)
+					success.add(work(task));
 		}
-		
+		tasks.clear();
 		return success;
 	}
 

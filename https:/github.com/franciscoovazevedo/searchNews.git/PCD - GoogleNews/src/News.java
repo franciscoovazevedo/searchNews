@@ -31,10 +31,10 @@ public class News {
 		return false;
 	}
 	
-	public int howManyTimesWord(String word) {
+	public int howManyTimesWord(String word) {// in the content
 		if(hasWord(word)){
 			int counter = content.toLowerCase().split("\\b" + word.toLowerCase() + "\\b").length - 1;
-			counter += title.toLowerCase().split("\\b" + word.toLowerCase() + "\\b").length - 1;
+//			counter += title.toLowerCase().split("\\b" + word.toLowerCase() + "\\b").length - 1;
 			return counter;
 		}
 		

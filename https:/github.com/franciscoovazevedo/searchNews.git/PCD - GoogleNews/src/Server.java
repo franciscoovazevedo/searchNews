@@ -60,25 +60,18 @@ public class Server {
 	}
 
 	
-	// organiza os resultados por numero de occorencias
+	// organiza os resultados por numero de occorencias. Ainda com um erro. 
 	private void organizeResults() {
 		successfullSearchNews.sort(new Comparator<Result>() {
 			@Override
 	        public int compare(Result r1, Result r2) {
-				if(r1.getNumberOfOccurrences() < r2.getNumberOfOccurrences()){
-		            return 1;
-		        } else {
-		            return -1;
-		        }
+				
+				if (r1.getNumberOfOccurrences() <= r2.getNumberOfOccurrences())
+					return 1;
+				else
+					return -1;
 	        }
 		});
 	}
 	
-//	public HashMap<String, Result> resultsHash(){
-//		for(Result result : successfullSearchNews){
-//			hashResults.put(result.getNumberOfOccurrences() + " - " + getNewsWithId(result.getNewsId()).getTitle(), result);
-//		}
-//		return hashResults;
-//		
-//	}
 }

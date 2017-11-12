@@ -2,40 +2,54 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.Highlighter.HighlightPainter;
 
 public class GUI {
 	
+	// SWING COMPONENTS
+	private JFrame frame;
 	private JTextArea newsContent = new JTextArea();
 	private DefaultListModel<String> results = new DefaultListModel<>();
-	private JList<String> titleList = new JList<String>(results);
-	private HashMap<String, Result> hashResults = new HashMap<>();
+	private JList<String> titleList = new JList<String>();
 	private JPanel mainPanel;
+	private JScrollPane scrollPane = new JScrollPane();
+	private Border border = BorderFactory.createLineBorder(Color.black, 1);
+	private String searchedWord;
 	
+	
+	// Client and Server
 	private Server server;
 	private Client client;
-	private JFrame frame;
-
+	
+	// variaveis usasdas para "trabalhar" nalguns algoritmos
+	private HashMap<String, Result> hashResults = new HashMap<>();
 	private boolean pressed = false;
-	private Border border = BorderFactory.createLineBorder(Color.black, 1);
 
 	
 	public GUI(Server server, Client client){
@@ -56,7 +70,7 @@ public class GUI {
 		frame.setVisible(true);
 	}
 
-	private void searchBar() {
+	private void searchBar() { // TextField e Button. Maximiza a janela após a primeira pesquisa
 		
 		JPanel panelNORTH = new JPanel();
 		panelNORTH.setLayout(new FlowLayout());
@@ -71,14 +85,16 @@ public class GUI {
 		
 		searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				// first search
 				if(!pressed){
 					mainPanel();
+					pressed = true;
 				}
-				pressed = true;
-				client = new Client(server, searchField.getText());
+				searchedWord = searchField.getText();
+				client = new Client(server, searchedWord);
 				client.start();
 				titleList();
-				System.out.println("Text=" + searchField.getText());
 	      }
 	    });
 	}
@@ -97,6 +113,7 @@ public class GUI {
 	}
 
 	private void titleList() {
+		//lista de titulos - se tiver vazia lança aviso sonoro com JOptionPane a informar do erro
 		results.clear();	
 		hashResults.clear();
 		for(Result result : server.getSuccessfullSearchNews()){
@@ -104,30 +121,78 @@ public class GUI {
 			hashResults.put(result.getNumberOfOccurrences() + " - " + server.getNewsWithId(result.getNewsId()).getTitle(), result);
 		}
 		
+		if(results.isEmpty()){ 
+			Toolkit.getDefaultToolkit().beep();
+			JOptionPane.showMessageDialog(frame, "Word " + searchedWord + " not found in the news DB");
+		}else{
+			titleList.setModel(results);;
+		}
+		
 		MouseListener mouseListener = new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-	           String selectedItem =  titleList.getSelectedValue();
-	           addTextArea(selectedItem);
+	           searchAction();
 	         }
 	    };
+	    
 	    titleList.setBorder(border);
-	    mainPanel.add(titleList, BorderLayout.EAST);
-	    newsContent("");
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-		titleList.addMouseListener(mouseListener);
+	    scrollPane.setViewportView(titleList);
+	    mainPanel.add(scrollPane, BorderLayout.EAST);
+	    newsContent("Select the news you want to read...");
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // MAXIMIZA A JANELA
 		
+		titleList.addMouseListener(mouseListener);
 	}
 	
+	private void searchAction(){
+		String selectedItem =  titleList.getSelectedValue();
+        addTextArea(selectedItem);
+	}
 	private void newsContent(String content) {
+		// Ainda falta a scroll bar!!! 
 		newsContent.setText(content);
 		newsContent.setEnabled(false);
 		newsContent.setLineWrap(true);
+		newsContent.setWrapStyleWord(true);
 		newsContent.setBorder(border);
+//		scrollPane.setViewportView(newsContent);
+//		System.out.println(newsContent.getText());
 		mainPanel.add(newsContent, BorderLayout.WEST);
-
+		
 	}
-	private void addTextArea( String content) {
-		content = server.getNewsWithId(hashResults.get(content).getNewsId()).getContent();
-		newsContent(content);
+	private void addTextArea( String selectedItem) {
+		selectedItem = server.getNewsWithId(hashResults.get(selectedItem).getNewsId()).getContent();
+		newsContent(selectedItem);
+		highLightWord(); 
+	}
+	
+	private void highLightWord(){
+		// sublinha as palavras a amarelo. ainda falta resolver o problema
+		// com as palavras coladas a pontuação.
+		
+
+		Highlighter highlighter = newsContent.getHighlighter();
+	    HighlightPainter painter = 
+	             new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
+	    String word = client.getWord();
+		int length = word.length();
+		List<String> list = Arrays.asList(newsContent.getText().split(" "));
+		ArrayList<Integer> indexes = new ArrayList<>();
+		int currentIndex = 0;
+	
+		for (String string : list) {
+			if(string.toLowerCase().equals(( word.toLowerCase()  )))
+				indexes.add(currentIndex);
+			currentIndex += string.length() + 1;
+		}
+		
+		for (Integer integer : indexes) {
+			int limit = integer + length;
+			try {
+				highlighter.addHighlight(integer, limit, painter);
+			} catch (BadLocationException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 }
